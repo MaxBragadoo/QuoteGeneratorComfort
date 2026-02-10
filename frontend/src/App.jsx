@@ -6,7 +6,7 @@ import DeletedQuotes from './pages/DeletedQuotes.jsx';
 import Login from './pages/Login.jsx';
 import '../index.css';
 import RAFLogoBlanco from './assets/RafLogoBlanco.png';
-import axios from 'axios';
+import api from './services/api';
 
 const HeaderClock = ({ userName }) => {
     const [dateState, setDateState] = useState(new Date());
@@ -59,7 +59,7 @@ export default function App() {
         const savedUser = localStorage.getItem('username');
 
         if (token) {
-            axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+            api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
             setIsAuthenticated(true);
             if (savedUser) setCurrentUser(savedUser);
         }
@@ -74,7 +74,7 @@ export default function App() {
     const handleLogout = () => {
         localStorage.removeItem('token');
         localStorage.removeItem('username'); // Borramos usuario al salir
-        delete axios.defaults.headers.common['Authorization'];
+        delete api.defaults.headers.common['Authorization'];
         setIsAuthenticated(false);
         setCurrentUser(''); // Limpiamos estado
     };

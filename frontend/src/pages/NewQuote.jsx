@@ -7,7 +7,7 @@ import QuoteTotal from '../components/quote/QuoteTotal';
 import AddServiceModal from '../components/modals/AddServiceModal';
 import PDFPreviewModal from '../components/modals/PDFPreviewModal';
 import ConfirmationModal, { ExclamationTriangleIcon, InboxArrowDownIcon } from '../components/modals/ConfirmationModal';
-import axios from 'axios';
+import api from '../services/api';
 import QuotePDFDocument from '../components/quote/QuotePDFDocument';
 import QuotePDFClientDocument from '../components/quote/QuotePDFClientDocument';
 import PDFSelectionModal from '../components/modals/PDFSelectionModal';
@@ -128,7 +128,7 @@ function NewQuote({ onNavigateToHistorico, previewingQuote, onCloneQuote }) {
             setIsReadOnly(true);
             setOnNewQuoteBlocked(previewingQuote?.estatus === 'INACTIVA');
 
-            axios.get(`http://localhost:3000/api/cotizacion/${quoteId}`)
+            api.get(`/cotizacion/${quoteId}`)
                 .then(response => {
                     const quoteData = response.data;
                     setTotalEnPalabras(quoteData.total_en_palabras || null);
@@ -267,11 +267,11 @@ function NewQuote({ onNavigateToHistorico, previewingQuote, onCloneQuote }) {
                     // LÓGICA CORREGIDA: Cargar el catálogo de servicios (allServices) para el modal
                     // sin sobrescribir los items actuales de la cotización.
                     if (quoteData.id_fbo) {
-                        axios.get('http://localhost:3000/api/servicios', { params: { id_fbo: quoteData.id_fbo } })
+                        api.get('/servicios', { params: { id_fbo: quoteData.id_fbo } })
                             .then(res => setAllServices(res.data))
                             .catch(err => console.error('Error loading services catalog:', err));
                     } else if (quoteData.fbo === 'Aviación General' || quoteData.fbo === 'Aviación Comercial') {
-                        axios.get('http://localhost:3000/api/servicios-by-aviation-type', { params: { aviationType: quoteData.fbo } })
+                        api.get('/servicios-by-aviation-type', { params: { aviationType: quoteData.fbo } })
                             .then(res => setAllServices(res.data))
                             .catch(err => console.error('Error loading services catalog:', err));
                     }
@@ -326,7 +326,7 @@ function NewQuote({ onNavigateToHistorico, previewingQuote, onCloneQuote }) {
             // Recuperamos el ID del cliente del objeto clonado
             if (cloneCustomerId) {
                 console.log("Cargando precios especiales para clonación, Cliente ID:", cloneCustomerId);
-                axios.get(`http://localhost:3000/api/clientes/${cloneCustomerId}/servicios-especiales`)
+                api.get(`/clientes/${cloneCustomerId}/servicios-especiales`)
                     .then(res => {
                         console.log("Precios especiales cargados (Clone):", res.data);
                         setClientSpecialPrices(res.data);
@@ -348,13 +348,13 @@ function NewQuote({ onNavigateToHistorico, previewingQuote, onCloneQuote }) {
             setIsGeneralAviation(isGenAv);
 
             if (previewingQuote.selectedFboId) {
-                axios.get('http://localhost:3000/api/servicios', {
+                api.get('/servicios', {
                     params: { id_fbo: previewingQuote.selectedFboId },
                 })
                 .then(response => setAllServices(response.data))
                 .catch(error => console.error('Error fetching services for clone:', error));
             } else if (previewingQuote.fboName === 'Aviación General' || previewingQuote.fboName === 'Aviación Comercial') {
-                 axios.get('http://localhost:3000/api/servicios-by-aviation-type', { params: { aviationType: previewingQuote.fboName } })
+                 api.get('/servicios-by-aviation-type', { params: { aviationType: previewingQuote.fboName } })
                     .then(res => setAllServices(res.data))
                     .catch(err => console.error('Error loading services catalog for clone:', err));
             }
@@ -376,7 +376,7 @@ function NewQuote({ onNavigateToHistorico, previewingQuote, onCloneQuote }) {
                 exchangeRateFetchedRef.current = true;
 
                 try {
-                    const response = await axios.get('http://localhost:3000/api/tipo-de-cambio');
+                    const response = await api.get('/tipo-de-cambio');
                     setExchangeRate(parseFloat(response.data.tipoDeCambio));
                 } catch (error) {
                     console.error('Error fetching exchange rate:', error);
@@ -390,7 +390,7 @@ function NewQuote({ onNavigateToHistorico, previewingQuote, onCloneQuote }) {
 
     // Cargar Tarifas RAF al montar
     useEffect(() => {
-        axios.get('http://localhost:3000/api/listar/tarifas_raf_mtow')
+        api.get('/listar/tarifas_raf_mtow')
             .then(response => setRafTariffs(response.data))
             .catch(error => console.error('Error fetching RAF tariffs:', error));
     }, []);
@@ -498,7 +498,7 @@ function NewQuote({ onNavigateToHistorico, previewingQuote, onCloneQuote }) {
         const customerId = currentFormData?.selectedCustomer?.id_cliente;
 
         if (customerId) {
-            axios.get(`http://localhost:3000/api/clientes/${customerId}/servicios-especiales`)
+            api.get(`/clientes/${customerId}/servicios-especiales`)
                 .then(res => {
                     setClientSpecialPrices(res.data);
                 })
@@ -670,7 +670,7 @@ function NewQuote({ onNavigateToHistorico, previewingQuote, onCloneQuote }) {
         // Caso 1: Hay un FBO real seleccionado (aeropuerto existe en BD)
         if (id_fbo) {
             try {
-                const response = await axios.get('http://localhost:3000/api/servicios', {
+                const response = await api.get('/servicios', {
                     params: { id_fbo },
                 });
 
@@ -880,7 +880,7 @@ function NewQuote({ onNavigateToHistorico, previewingQuote, onCloneQuote }) {
         else if (fboNameOrAviationType === 'Aviación General' || fboNameOrAviationType === 'Aviación Comercial') {
             try {
                 // Traer los servicios por defecto según el tipo de aviación
-                const response = await axios.get('http://localhost:3000/api/servicios-by-aviation-type', {
+                const response = await api.get('/servicios-by-aviation-type', {
                     params: { aviationType: fboNameOrAviationType },
                 });
 
@@ -1601,7 +1601,7 @@ function NewQuote({ onNavigateToHistorico, previewingQuote, onCloneQuote }) {
 
             console.log("Payload enviado al Backend:", quoteData);
             try {
-                const response = await axios.post('http://localhost:3000/api/cotizaciones', quoteData);
+                const response = await api.post('/cotizaciones', quoteData);
                 console.log('Quote saved successfully:', response.data);
                 onNavigateToHistorico();
             } catch (error) {
@@ -1742,7 +1742,7 @@ function NewQuote({ onNavigateToHistorico, previewingQuote, onCloneQuote }) {
             }
 
             // 2. Cargar servicios especiales (Base de datos)
-            axios.get(`http://localhost:3000/api/clientes/${customer.id_cliente}/servicios-especiales`)
+            api.get(`/clientes/${customer.id_cliente}/servicios-especiales`)
                 .then(res => setClientSpecialPrices(res.data))
                 .catch(err => console.error(err));
 

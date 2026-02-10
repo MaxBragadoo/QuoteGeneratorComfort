@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import HistoricHeader from '../components/historic/HistoricHeader.jsx';
 import HistoricTable from '../components/historic/HistoricTable.jsx';
+import api from '../services/api';
 
 export default function DeletedQuotes({ onNavigateToActive, onPreviewQuote }) {
     const [quotes, setQuotes] = useState([]);
@@ -12,9 +13,8 @@ export default function DeletedQuotes({ onNavigateToActive, onPreviewQuote }) {
     const [selectedModel, setSelectedModel] = useState('');
 
     const fetchDeletedQuotes = () => {
-        fetch('http://localhost:3000/api/listar/cotizaciones-eliminadas')
-            .then(response => response.json())
-            .then(data => setQuotes(data))
+        api.get('/listar/cotizaciones-eliminadas')
+            .then(response => setQuotes(response.data))
             .catch(error => console.error('Error fetching deleted quotes:', error));
     };
 

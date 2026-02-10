@@ -1,5 +1,5 @@
 import React, { useEffect, useState, forwardRef, useImperativeHandle, useRef } from 'react';
-import axios from 'axios';
+import api from '../../services/api';
 import { jwtDecode } from 'jwt-decode';
 
 import Calculator from '../features/Calculator.jsx';
@@ -456,12 +456,12 @@ const QuoteForm = forwardRef(({ onAddItem, onOpenServiceModal, onSelectionChange
                     aeronavesModelosResponse,
                     clientesAeronavesResponse
                 ] = await Promise.all([
-                    axios.get('http://localhost:3000/api/listar/clientes'),
-                    axios.get('http://localhost:3000/api/listar/aeropuertos'),
-                    axios.get('http://localhost:3000/api/listar/categoriasOperaciones'),
-                    axios.get('http://localhost:3000/api/listar/fbos'),
-                    axios.get('http://localhost:3000/api/listar/aeronaves_modelos'),
-                    axios.get('http://localhost:3000/api/listar/clientes_aeronaves')
+                    api.get('/listar/clientes'),
+                    api.get('/listar/aeropuertos'),
+                    api.get('/listar/categoriasOperaciones'),
+                    api.get('/listar/fbos'),
+                    api.get('/listar/aeronaves_modelos'),
+                    api.get('/listar/clientes_aeronaves')
                 ]);
 
                 setClientes(clientesResponse.data);

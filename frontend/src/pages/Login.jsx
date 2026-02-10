@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import RafLogo from '../assets/RafLogoBlanco.png';
-import axios from 'axios';
+import api from '../services/api';
 
 const Login = ({ onLogin }) => {
     const [username, setUsername] = useState('');
@@ -17,7 +17,7 @@ const Login = ({ onLogin }) => {
         setError('');
 
         try {
-            const response = await axios.post('http://localhost:3000/api/login', {
+            const response = await api.post('/login', {
                 username,
                 password,
             });
@@ -25,7 +25,7 @@ const Login = ({ onLogin }) => {
             const { token } = response.data;
             localStorage.setItem('token', token); // Guardar el token
             localStorage.setItem('username', username); // Guardar el username
-            axios.defaults.headers.common['Authorization'] = `Bearer ${token}`; // Configurar token para futuras peticiones
+            api.defaults.headers.common['Authorization'] = `Bearer ${token}`; // Configurar token para futuras peticiones
 
             if (onLogin) {
                 onLogin(username);

@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const pool = require('../config/db'); // Asumiendo que tienes un archivo de configuración de la BD
+const pool = require('../config/db');
 
 // Iniciar sesión
 const login = async (req, res) => {
@@ -34,6 +34,11 @@ const login = async (req, res) => {
             username: user.username,
             rol: user.rol,
         };
+
+        if (!process.env.JWT_SECRET) {
+            console.error('❌ ERROR CRÍTICO: Falta la variable JWT_SECRET en Azure.');
+            return res.status(500).json({ message: 'Error de configuración del servidor' });
+        }
 
         const token = jwt.sign(payload, process.env.JWT_SECRET, {
             expiresIn: '1h', // El token expira en 1 hora

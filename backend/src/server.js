@@ -19,7 +19,7 @@ const tarifasRafMtowRoutes = require('./routes/tarifas_raf_mtow.routes');
 const corsOptions = require('./config/cors');
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 // Habilitar CORS con las opciones configuradas
 app.use(cors(corsOptions));
@@ -48,7 +48,7 @@ let cacheTipoCambio = {
 };
 
 app.get('/api/tipo-de-cambio', async (req, res) => {
-    const token = '069c2abcc766a1ecd1b91604ad1c08da08a5cb734c0bf8188550ee85937b14ee';
+    const token = process.env.BANXICO_TOKEN || '069c2abcc766a1ecd1b91604ad1c08da08a5cb734c0bf8188550ee85937b14ee';
     const idSerie = 'SF43718'; 
     const ahora = new Date();
 

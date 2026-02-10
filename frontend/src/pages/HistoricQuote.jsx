@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import HistoricHeader from '../components/historic/HistoricHeader';
 import HistoricTable from '../components/historic/HistoricTable';
 import ConfirmationModal, { ExclamationTriangleIcon } from '../components/modals/ConfirmationModal';
+import api from '../services/api';
 
 export default function HistoricoCotizaciones({ onNavigateNewQuote, onPreviewQuote, onNavigateToDeleted }) {
     const [quotes, setQuotes] = useState([]);
@@ -18,9 +19,8 @@ export default function HistoricoCotizaciones({ onNavigateNewQuote, onPreviewQuo
     const [quoteToDelete, setQuoteToDelete] = useState(null);
 
     const fetchQuotes = () => {
-        fetch('http://localhost:3000/api/listar/cotizaciones')
-            .then(response => response.json())
-            .then(data => setQuotes(data))
+        api.get('/listar/cotizaciones')
+            .then(response => setQuotes(response.data))
             .catch(error => console.error('Error fetching quotes:', error));
     };
 
@@ -53,14 +53,10 @@ export default function HistoricoCotizaciones({ onNavigateNewQuote, onPreviewQuo
         const idToDelete = quoteToDelete.id_cotizacion; // Obtenemos el ID del objeto guardado
 
         try {
-            const response = await fetch(`http://localhost:3000/api/eliminar/cotizacion/${idToDelete}`, {
-                method: 'PUT',
-            });
-
-            if (response.ok) {
-                fetchQuotes();
-            } else {
-                console.error('Failed to delete quote:', await response.text());
+            // Usamos api.put en lugar de fetch
+            const response = await api.put(`/eliminar/cotizacion/${idToDelete}`);
+            if (response.status === 200) {
+                 fetchQuotes();
             }
         } catch (error) {
             console.error('Error deleting quote:', error);
@@ -129,17 +125,10 @@ export default function HistoricoCotizaciones({ onNavigateNewQuote, onPreviewQuo
 
         setIsJoining(true);
         try {
-            const response = await fetch('http://localhost:3000/api/cotizaciones/join', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ ids: selectedQuoteIds }),
-            });
-
-            const data = await response.json();
-
-            if (!response.ok) {
+            // Usamos api.post
+            const response = await api.post('/cotizaciones/join', { ids: selectedQuoteIds });
+            
+            if (response.status !== 201 && response.status !== 200) {
                 throw new Error(data.error || 'Error al unir las cotizaciones');
             }
 
