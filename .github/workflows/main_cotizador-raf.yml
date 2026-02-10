@@ -24,6 +24,7 @@ jobs:
           node-version: '24.x'
 
       - name: npm install, build, and test
+        working-directory: ./backend
         run: |
           npm install
           npm run build --if-present
@@ -51,6 +52,7 @@ jobs:
         with:
           app-name: 'cotizador-raf'
           slot-name: 'Production'
-          package: .
+          package: ./backend
 
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_A3DE23F7F15649409F2737F3C463BAA6 }}
+
