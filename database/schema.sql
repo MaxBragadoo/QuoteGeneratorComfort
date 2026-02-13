@@ -8,7 +8,7 @@ CREATE TABLE clientes (
     id_cliente BIGSERIAL PRIMARY KEY,
     nombre_cliente VARCHAR(255) NOT NULL,
     email_contacto VARCHAR(255), --Este correo se puede repetir (será el email de contacto)
-    telefono_cliente VARCHAR(35),
+    telefono_cliente VARCHAR(45),
     direccion_cliente VARCHAR(500),
     ciudad_cliente VARCHAR(100),
     estado_cliente VARCHAR(100),
